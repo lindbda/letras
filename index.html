@@ -1,0 +1,1074 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>¡Letras! Spanish Letter Sounds</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --red: #D32F2F;
+    --red-bright: #F44336;
+    --red-light: #FFCDD2;
+    --red-dark: #B71C1C;
+    --yellow: #FDD835;
+    --yellow-bright: #FFEE58;
+    --yellow-light: #FFFDE7;
+    --yellow-dark: #F9A825;
+    --orange: #FF6F00;
+    --white: #FFFDF0;
+    --text-dark: #1A0000;
+    --shadow: rgba(180,0,0,0.18);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Nunito', sans-serif;
+    background: var(--red-dark);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Decorative background pattern */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      radial-gradient(circle at 20% 20%, rgba(253,216,53,0.12) 0%, transparent 50%),
+      radial-gradient(circle at 80% 80%, rgba(253,216,53,0.08) 0%, transparent 50%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  #app { position: relative; z-index: 1; }
+
+  /* ===== HEADER ===== */
+  header {
+    background: linear-gradient(135deg, var(--yellow) 0%, var(--yellow-dark) 100%);
+    padding: 14px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+    border-bottom: 4px solid var(--red);
+  }
+
+  .logo {
+    font-family: 'Fredoka One', cursive;
+    font-size: 2rem;
+    color: var(--red-dark);
+    text-shadow: 2px 2px 0 rgba(0,0,0,0.1);
+    letter-spacing: 1px;
+  }
+
+  .logo span { color: var(--red); }
+
+  .header-controls {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+  }
+
+  .mode-tabs {
+    display: flex;
+    background: rgba(0,0,0,0.15);
+    border-radius: 50px;
+    padding: 4px;
+    gap: 4px;
+  }
+
+  .mode-tab {
+    font-family: 'Nunito', sans-serif;
+    font-weight: 800;
+    font-size: 0.85rem;
+    padding: 8px 18px;
+    border-radius: 50px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s;
+    color: var(--red-dark);
+    background: transparent;
+  }
+
+  .mode-tab.active {
+    background: var(--red);
+    color: white;
+    box-shadow: 0 2px 8px rgba(180,0,0,0.4);
+  }
+
+  .icon-btn {
+    width: 42px; height: 42px;
+    border-radius: 50%;
+    border: 2px solid var(--red);
+    background: white;
+    color: var(--red);
+    font-size: 1.2rem;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.2s;
+    box-shadow: 0 2px 6px var(--shadow);
+  }
+
+  .icon-btn:hover { background: var(--red); color: white; transform: scale(1.08); }
+
+  /* ===== SCREENS ===== */
+  .screen { display: none; padding: 20px; max-width: 900px; margin: 0 auto; }
+  .screen.active { display: block; }
+
+  /* ===== EXPLORATION MODE ===== */
+  .explore-header {
+    text-align: center;
+    color: var(--yellow);
+    font-family: 'Fredoka One', cursive;
+    font-size: 1.3rem;
+    margin-bottom: 16px;
+    text-shadow: 1px 1px 4px rgba(0,0,0,0.4);
+  }
+
+  .letter-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+    gap: 12px;
+  }
+
+  .letter-tile {
+    background: linear-gradient(145deg, var(--yellow-bright), var(--yellow));
+    border: 3px solid var(--yellow-dark);
+    border-radius: 18px;
+    padding: 10px 6px 8px;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.18s;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.5);
+    user-select: none;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .letter-tile:hover {
+    transform: translateY(-4px) scale(1.05);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+    border-color: var(--red);
+  }
+
+  .letter-tile:active { transform: scale(0.96); }
+
+  .letter-tile.playing {
+    background: linear-gradient(145deg, var(--red-bright), var(--red));
+    border-color: var(--red-dark);
+    animation: pulse 0.4s ease;
+  }
+
+  .letter-tile.playing .tile-letter { color: white; }
+  .letter-tile.playing .tile-emoji { filter: brightness(1.2); }
+  .letter-tile.playing .tile-word { color: rgba(255,255,255,0.9); }
+
+  @keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1.05); }
+  }
+
+  .tile-letter {
+    font-family: 'Fredoka One', cursive;
+    font-size: 2rem;
+    color: var(--red-dark);
+    line-height: 1;
+  }
+
+  .tile-emoji { font-size: 1.5rem; margin: 4px 0 2px; }
+
+  .tile-word {
+    font-size: 0.65rem;
+    font-weight: 700;
+    color: var(--red-dark);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  /* ===== QUIZ MODE ===== */
+  .quiz-container { max-width: 700px; margin: 0 auto; }
+
+  .quiz-prompt {
+    background: linear-gradient(135deg, var(--yellow), var(--yellow-dark));
+    border-radius: 20px;
+    padding: 20px 28px;
+    text-align: center;
+    margin-bottom: 24px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.25);
+    border: 3px solid var(--yellow-dark);
+  }
+
+  .prompt-label {
+    font-size: 0.8rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    color: var(--red-dark);
+    letter-spacing: 2px;
+    margin-bottom: 6px;
+  }
+
+  .prompt-bilingual {
+    font-family: 'Fredoka One', cursive;
+    font-size: 1.6rem;
+    color: var(--red);
+    line-height: 1.2;
+  }
+
+  .prompt-sub {
+    font-size: 0.85rem;
+    color: var(--red-dark);
+    margin-top: 4px;
+    font-weight: 600;
+  }
+
+  .replay-btn {
+    margin-top: 10px;
+    background: var(--red);
+    color: white;
+    border: none;
+    border-radius: 50px;
+    padding: 8px 22px;
+    font-family: 'Nunito', sans-serif;
+    font-weight: 800;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    box-shadow: 0 3px 10px rgba(180,0,0,0.4);
+  }
+
+  .replay-btn:hover { background: var(--red-dark); transform: scale(1.05); }
+
+  /* Timer bar */
+  .timer-wrap {
+    background: rgba(0,0,0,0.2);
+    border-radius: 8px;
+    height: 10px;
+    overflow: hidden;
+    margin-bottom: 20px;
+  }
+
+  .timer-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--yellow), var(--yellow-dark));
+    border-radius: 8px;
+    transition: none;
+    width: 100%;
+  }
+
+  /* Card array */
+  .card-array {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    flex-wrap: wrap;
+    margin-bottom: 24px;
+  }
+
+  .stim-card {
+    width: 160px;
+    background: linear-gradient(145deg, var(--yellow-bright), var(--yellow));
+    border: 4px solid var(--yellow-dark);
+    border-radius: 24px;
+    padding: 24px 16px 18px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.6);
+    user-select: none;
+  }
+
+  .stim-card:hover { transform: translateY(-6px); box-shadow: 0 12px 28px rgba(0,0,0,0.3); }
+  .stim-card:active { transform: scale(0.95); }
+
+  .stim-card.fade-out {
+    opacity: 0.2;
+    pointer-events: none;
+    transform: scale(0.9);
+    transition: all 0.5s;
+  }
+
+  .stim-card.correct-flash {
+    background: linear-gradient(145deg, #66BB6A, #388E3C);
+    border-color: #1B5E20;
+    animation: correctBounce 0.5s ease;
+  }
+
+  .stim-card.wrong-flash {
+    background: linear-gradient(145deg, #EF5350, #C62828);
+    border-color: #7f0000;
+    animation: shake 0.4s ease;
+  }
+
+  @keyframes correctBounce {
+    0% { transform: scale(1); }
+    40% { transform: scale(1.15); }
+    100% { transform: scale(1); }
+  }
+
+  @keyframes shake {
+    0%,100% { transform: translateX(0); }
+    25% { transform: translateX(-10px); }
+    75% { transform: translateX(10px); }
+  }
+
+  .card-letter {
+    font-family: 'Fredoka One', cursive;
+    font-size: 3.5rem;
+    color: var(--red-dark);
+    line-height: 1;
+  }
+
+  .card-emoji { font-size: 2.2rem; margin: 8px 0 4px; }
+
+  .card-word {
+    font-size: 0.8rem;
+    font-weight: 800;
+    color: var(--red-dark);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  /* Quiz status */
+  .quiz-stats {
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-bottom: 16px;
+  }
+
+  .stat-badge {
+    background: rgba(253,216,53,0.15);
+    border: 2px solid var(--yellow-dark);
+    border-radius: 50px;
+    padding: 6px 16px;
+    color: var(--yellow);
+    font-weight: 800;
+    font-size: 0.85rem;
+  }
+
+  .stat-badge span { color: white; }
+
+  /* Confetti overlay */
+  #confetti-canvas {
+    position: fixed; inset: 0;
+    pointer-events: none;
+    z-index: 999;
+  }
+
+  /* ===== SETTINGS PANEL ===== */
+  .settings-overlay {
+    display: none;
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.6);
+    z-index: 100;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .settings-overlay.open { display: flex; }
+
+  .settings-panel {
+    background: var(--white);
+    border-radius: 24px;
+    padding: 28px;
+    width: 90%;
+    max-width: 480px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+    border: 3px solid var(--yellow-dark);
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+
+  .settings-title {
+    font-family: 'Fredoka One', cursive;
+    font-size: 1.6rem;
+    color: var(--red);
+    margin-bottom: 20px;
+    text-align: center;
+  }
+
+  .setting-group {
+    margin-bottom: 18px;
+  }
+
+  .setting-label {
+    font-weight: 800;
+    color: var(--red-dark);
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+    display: block;
+  }
+
+  .setting-label-sub {
+    font-weight: 600;
+    font-size: 0.75rem;
+    color: #888;
+    text-transform: none;
+    letter-spacing: 0;
+  }
+
+  .toggle-row {
+    display: flex;
+    gap: 8px;
+  }
+
+  .toggle-btn {
+    flex: 1;
+    padding: 10px;
+    border-radius: 12px;
+    border: 2px solid #ddd;
+    background: white;
+    font-family: 'Nunito', sans-serif;
+    font-weight: 700;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.18s;
+    color: #555;
+  }
+
+  .toggle-btn.active {
+    background: var(--red);
+    border-color: var(--red-dark);
+    color: white;
+    box-shadow: 0 2px 8px rgba(180,0,0,0.3);
+  }
+
+  .range-wrap {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  input[type=range] {
+    flex: 1;
+    accent-color: var(--red);
+    height: 6px;
+  }
+
+  .range-val {
+    font-weight: 800;
+    color: var(--red);
+    font-size: 1rem;
+    min-width: 36px;
+    text-align: center;
+  }
+
+  .voice-test-btn {
+    background: var(--yellow);
+    border: 2px solid var(--yellow-dark);
+    color: var(--red-dark);
+    font-family: 'Nunito', sans-serif;
+    font-weight: 800;
+    font-size: 0.85rem;
+    padding: 8px 16px;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: all 0.2s;
+    margin-top: 8px;
+  }
+
+  .voice-test-btn:hover { background: var(--yellow-dark); }
+
+  .settings-close {
+    width: 100%;
+    margin-top: 20px;
+    padding: 14px;
+    background: var(--red);
+    color: white;
+    border: none;
+    border-radius: 14px;
+    font-family: 'Nunito', sans-serif;
+    font-weight: 800;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .settings-close:hover { background: var(--red-dark); }
+
+  /* ===== DATA PANEL ===== */
+  .data-overlay {
+    display: none;
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.6);
+    z-index: 100;
+    align-items: flex-start;
+    justify-content: center;
+    padding-top: 40px;
+  }
+
+  .data-overlay.open { display: flex; }
+
+  .data-panel {
+    background: var(--white);
+    border-radius: 24px;
+    padding: 28px;
+    width: 95%;
+    max-width: 700px;
+    max-height: 80vh;
+    overflow-y: auto;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+    border: 3px solid var(--yellow-dark);
+  }
+
+  .data-title {
+    font-family: 'Fredoka One', cursive;
+    font-size: 1.5rem;
+    color: var(--red);
+    margin-bottom: 16px;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.85rem;
+  }
+
+  th {
+    background: var(--red);
+    color: white;
+    padding: 8px 10px;
+    text-align: left;
+    font-weight: 800;
+  }
+
+  td {
+    padding: 7px 10px;
+    border-bottom: 1px solid #eee;
+    color: #333;
+  }
+
+  tr:nth-child(even) td { background: #fafafa; }
+
+  .data-btns {
+    display: flex;
+    gap: 10px;
+    margin-top: 16px;
+  }
+
+  .data-btn {
+    flex: 1;
+    padding: 12px;
+    border-radius: 12px;
+    border: none;
+    font-family: 'Nunito', sans-serif;
+    font-weight: 800;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .data-btn.export { background: var(--red); color: white; }
+  .data-btn.clear { background: #eee; color: #555; }
+  .data-btn:hover { opacity: 0.85; transform: scale(1.02); }
+
+  /* ===== START QUIZ BUTTON ===== */
+  .start-quiz-wrap {
+    text-align: center;
+    padding: 40px 20px;
+  }
+
+  .start-quiz-btn {
+    font-family: 'Fredoka One', cursive;
+    font-size: 1.8rem;
+    padding: 20px 50px;
+    background: linear-gradient(135deg, var(--yellow), var(--yellow-dark));
+    color: var(--red-dark);
+    border: 4px solid var(--yellow-dark);
+    border-radius: 30px;
+    cursor: pointer;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+    transition: all 0.2s;
+  }
+
+  .start-quiz-btn:hover { transform: translateY(-4px) scale(1.04); box-shadow: 0 14px 32px rgba(0,0,0,0.35); }
+
+  .quiz-hint {
+    color: rgba(255,255,255,0.6);
+    font-size: 0.85rem;
+    margin-top: 12px;
+    font-weight: 600;
+  }
+
+  /* Outcome label colors */
+  .ind { color: #2E7D32; font-weight: 800; }
+  .p1  { color: #F57F17; font-weight: 800; }
+  .p2  { color: #C62828; font-weight: 800; }
+</style>
+</head>
+<body>
+<div id="app">
+  <header>
+    <div class="logo">¡<span>Letras</span>!</div>
+    <div class="header-controls">
+      <div class="mode-tabs">
+        <button class="mode-tab active" onclick="switchMode('explore')">🔍 Explore</button>
+        <button class="mode-tab" onclick="switchMode('quiz')">📝 Quiz</button>
+      </div>
+      <button class="icon-btn" title="Settings / Configuración" onclick="openSettings()">⚙️</button>
+      <button class="icon-btn" title="Data / Datos" onclick="openData()">📊</button>
+    </div>
+  </header>
+
+  <!-- EXPLORE SCREEN -->
+  <div id="screen-explore" class="screen active">
+    <p class="explore-header">Toca una letra para escuchar • Tap a letter to hear it</p>
+    <div class="letter-grid" id="letterGrid"></div>
+  </div>
+
+  <!-- QUIZ SCREEN -->
+  <div id="screen-quiz" class="screen">
+    <div class="quiz-container" id="quizContainer">
+      <div class="start-quiz-wrap">
+        <button class="start-quiz-btn" onclick="startQuiz()">▶ Empezar / Start Quiz</button>
+        <p class="quiz-hint">Configure settings ⚙️ before starting</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SETTINGS OVERLAY -->
+<div class="settings-overlay" id="settingsOverlay">
+  <div class="settings-panel">
+    <div class="settings-title">⚙️ Settings / Configuración</div>
+
+    <div class="setting-group">
+      <span class="setting-label">🎤 Voice / Voz</span>
+      <div class="toggle-row">
+        <button class="toggle-btn active" id="voiceMale" onclick="setVoiceGender('male')">♂ Male / Masculino</button>
+        <button class="toggle-btn" id="voiceFemale" onclick="setVoiceGender('female')">♀ Female / Femenino</button>
+      </div>
+      <button class="voice-test-btn" onclick="testVoice()">🔊 Test Voice / Probar Voz: "/a/, árbol 🌳"</button>
+    </div>
+
+    <!-- Card array locked to 2 -->
+
+    <div class="setting-group">
+      <span class="setting-label">⏱ Errorless Timer <span class="setting-label-sub">(seconds before fading a foil)</span></span>
+      <div class="range-wrap">
+        <input type="range" id="timerRange" min="2" max="15" value="5" oninput="updateTimer(this.value)">
+        <span class="range-val" id="timerVal">5s</span>
+      </div>
+    </div>
+
+    <div class="setting-group">
+      <span class="setting-label">🔊 Speech Speed / Velocidad</span>
+      <div class="range-wrap">
+        <input type="range" id="rateRange" min="5" max="12" value="8" oninput="updateRate(this.value)">
+        <span class="range-val" id="rateVal">0.8×</span>
+      </div>
+    </div>
+
+    <button class="settings-close" onclick="closeSettings()">✓ Done / Listo</button>
+  </div>
+</div>
+
+<!-- DATA OVERLAY -->
+<div class="data-overlay" id="dataOverlay">
+  <div class="data-panel">
+    <div class="data-title">📊 Session Data / Datos de Sesión</div>
+    <div id="dataTableWrap"></div>
+    <div class="data-btns">
+      <button class="data-btn export" onclick="exportCSV()">⬇ Export CSV</button>
+      <button class="data-btn clear" onclick="clearData()">🗑 Clear / Borrar</button>
+      <button class="data-btn" style="background:#ddd;color:#333" onclick="closeData()">✕ Close</button>
+    </div>
+  </div>
+</div>
+
+<canvas id="confetti-canvas"></canvas>
+
+<script>
+// ===== LETTER DATA =====
+const LETTERS = [
+  { l:'A', emoji:'🌳', word:'árbol',    name:'a',     sound:'/a/' },
+  { l:'B', emoji:'🫦', word:'boca',     name:'be',    sound:'/b/' },
+  { l:'C', emoji:'🏠', word:'casa',     name:'ce',    sound:'/k/' },
+  { l:'CH',emoji:'🍫', word:'chocolate',name:'che',   sound:'/ch/' },
+  { l:'D', emoji:'👆', word:'dedo',     name:'de',    sound:'/d/' },
+  { l:'E', emoji:'⭐', word:'estrella', name:'e',     sound:'/e/' },
+  { l:'F', emoji:'🌸', word:'flor',     name:'efe',   sound:'/f/' },
+  { l:'G', emoji:'🐱', word:'gato',     name:'ge',    sound:'/g/' },
+  { l:'H', emoji:'🌿', word:'hierba',   name:'hache', sound:'silent' },
+  { l:'I', emoji:'🏝️', word:'isla',     name:'i',     sound:'/i/' },
+  { l:'J', emoji:'🦒', word:'jirafa',   name:'jota',  sound:'/x/' },
+  { l:'K', emoji:'🥝', word:'kiwi',     name:'ka',    sound:'/k/' },
+  { l:'L', emoji:'🌙', word:'luna',     name:'ele',   sound:'/l/' },
+  { l:'LL',emoji:'🔑', word:'llave',    name:'elle',  sound:'/ʎ/' },
+  { l:'M', emoji:'🍎', word:'manzana',  name:'eme',   sound:'/m/' },
+  { l:'N', emoji:'🍊', word:'naranja',  name:'ene',   sound:'/n/' },
+  { l:'Ñ', emoji:'👶', word:'niño',     name:'eñe',   sound:'/ɲ/' },
+  { l:'O', emoji:'🐑', word:'oveja',    name:'o',     sound:'/o/' },
+  { l:'P', emoji:'🍞', word:'pan',      name:'pe',    sound:'/p/' },
+  { l:'Q', emoji:'🧀', word:'queso',    name:'cu',    sound:'/k/' },
+  { l:'R', emoji:'🐸', word:'rana',     name:'erre',  sound:'/r/' },
+  { l:'RR',emoji:'🚗', word:'carro',    name:'erre doble', sound:'/rr/' },
+  { l:'S', emoji:'☀️', word:'sol',      name:'ese',   sound:'/s/' },
+  { l:'T', emoji:'🌮', word:'taco',     name:'te',    sound:'/t/' },
+  { l:'U', emoji:'🍇', word:'uvas',     name:'u',     sound:'/u/' },
+  { l:'V', emoji:'🐄', word:'vaca',     name:'uve',   sound:'/b/' },
+  { l:'W', emoji:'🌐', word:'web',      name:'doble uve', sound:'/w/' },
+  { l:'X', emoji:'🚕', word:'taxi',     name:'equis', sound:'/ks/' },
+  { l:'Y', emoji:'🐴', word:'yegua',    name:'ye',    sound:'/ʝ/' },
+  { l:'Z', emoji:'🦊', word:'zorro',    name:'zeta',  sound:'/s/' },
+];
+
+// ===== SETTINGS STATE =====
+const cfg = {
+  voiceGender: 'male',
+  arraySize: 2,
+  delay: 5,
+  rate: 0.8,
+};
+
+// ===== SESSION STATE =====
+let sess = {
+  mode: 'explore',
+  currentTarget: null,
+  promptLevel: 0,
+  timerHandle: null,
+  trialData: [],
+  availableLetters: [...LETTERS],
+  trialCount: 0,
+};
+
+// ===== SPEECH =====
+let voices = [];
+
+function loadVoices() {
+  voices = window.speechSynthesis.getVoices();
+}
+
+window.speechSynthesis.onvoiceschanged = loadVoices;
+loadVoices();
+
+function getSpanishVoice() {
+  const all = window.speechSynthesis.getVoices();
+  const esVoices = all.filter(v => v.lang.startsWith('es'));
+  if (!esVoices.length) return null;
+
+  // Prefer gender
+  const genderHints = cfg.voiceGender === 'male'
+    ? ['male','hombre','jorge','juan','diego','miguel','pablo']
+    : ['female','mujer','paulina','mónica','mónica','rosa','lucía','luciana','elena'];
+
+  for (const hint of genderHints) {
+    const match = esVoices.find(v =>
+      v.name.toLowerCase().includes(hint) || v.voiceURI.toLowerCase().includes(hint)
+    );
+    if (match) return match;
+  }
+
+  // Fallback: pick by index (male = first, female = last if multiple)
+  if (cfg.voiceGender === 'female' && esVoices.length > 1) return esVoices[esVoices.length - 1];
+  return esVoices[0];
+}
+
+function speak(text, cb) {
+  window.speechSynthesis.cancel();
+  const utt = new SpeechSynthesisUtterance(text);
+  utt.lang = 'es-ES';
+  const v = getSpanishVoice();
+  if (v) utt.voice = v;
+  utt.rate = cfg.rate;
+  utt.pitch = cfg.voiceGender === 'female' ? 1.15 : 0.9;
+  if (cb) utt.onend = cb;
+  window.speechSynthesis.speak(utt);
+}
+
+function speakLetter(letterObj) {
+  // Say: sound ... word (no letter name)
+  const soundText = letterObj.sound === 'silent' ? 'la hache es muda' : letterObj.sound;
+  speak(`${soundText}. ${letterObj.word}`);
+}
+
+function testVoice() {
+  const a = LETTERS[0];
+  speak(`${a.sound}. ${a.word}`);
+}
+
+// ===== BUILD EXPLORE GRID =====
+function buildGrid() {
+  const grid = document.getElementById('letterGrid');
+  grid.innerHTML = '';
+  LETTERS.forEach(item => {
+    const tile = document.createElement('div');
+    tile.className = 'letter-tile';
+    tile.innerHTML = `
+      <div class="tile-letter">${item.l}</div>
+      <div class="tile-emoji">${item.emoji}</div>
+      <div class="tile-word">${item.word}</div>`;
+    tile.onclick = () => {
+      document.querySelectorAll('.letter-tile.playing').forEach(t => t.classList.remove('playing'));
+      tile.classList.add('playing');
+      speakLetter(item);
+      setTimeout(() => tile.classList.remove('playing'), 1800);
+    };
+    grid.appendChild(tile);
+  });
+}
+
+// ===== QUIZ =====
+function startQuiz() {
+  sess.availableLetters = [...LETTERS];
+  sess.trialCount = 0;
+  nextTrial();
+}
+
+function pickRandom(arr, exclude) {
+  const pool = arr.filter(x => x.l !== exclude);
+  return pool[Math.floor(Math.random() * pool.length)];
+}
+
+function shuffle(arr) {
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
+function nextTrial() {
+  clearTimer();
+  sess.promptLevel = 0;
+  sess.trialCount++;
+
+  // Pick target
+  if (!sess.availableLetters.length) sess.availableLetters = [...LETTERS];
+  const idx = Math.floor(Math.random() * sess.availableLetters.length);
+  const target = sess.availableLetters.splice(idx, 1)[0];
+  sess.currentTarget = target.l;
+
+  // Always 1 foil (2-card)
+  const foil = pickRandom(LETTERS, sess.currentTarget);
+  const items = shuffle([target, foil]);
+
+  renderQuiz(target, items);
+  speakLetter(target);
+}
+
+function renderQuiz(target, items) {
+  const container = document.getElementById('quizContainer');
+  container.innerHTML = `
+    <div class="quiz-stats">
+      <div class="stat-badge">Trial <span>${sess.trialCount}</span></div>
+      <div class="stat-badge">Today <span>${sess.trialData.length}</span></div>
+    </div>
+    <div class="quiz-prompt">
+      <div class="prompt-label">Find the letter • Encuentra la letra</div>
+      <div class="prompt-bilingual">¿Cuál es la letra? / Which letter?</div>
+      <div class="prompt-sub">"${target.name}" · ${target.sound} · ${target.emoji} ${target.word}</div>
+      <button class="replay-btn" onclick="speakLetter(LETTERS.find(l=>l.l===sess.currentTarget))">🔊 Repeat / Repetir</button>
+    </div>
+    <div class="timer-wrap"><div class="timer-fill" id="timerBarFill"></div></div>
+    <div class="card-array" id="cardArray">
+      ${items.map(item => `
+        <div class="stim-card" data-val="${item.l}" onclick="handleCardTap(this, '${item.l}')">
+          <div class="card-letter">${item.l}</div>
+          <div class="card-emoji">${item.emoji}</div>
+          <div class="card-word">${item.word}</div>
+        </div>`).join('')}
+    </div>`;
+
+  startErrorlessTimer();
+}
+
+function handleCardTap(card, val) {
+  if (val === sess.currentTarget) {
+    clearTimer();
+    card.classList.add('correct-flash');
+    speakLetter(LETTERS.find(l => l.l === sess.currentTarget));
+    logTrial('correct');
+    launchConfetti();
+    setTimeout(() => nextTrial(), 1600);
+  } else {
+    card.classList.add('wrong-flash');
+    setTimeout(() => card.classList.remove('wrong-flash'), 400);
+    sess.promptLevel++;
+    // Fade this foil on wrong tap
+    card.classList.add('fade-out');
+    card.onclick = null;
+    // Restart timer
+    clearTimer();
+    startErrorlessTimer();
+  }
+}
+
+function startErrorlessTimer() {
+  clearTimer();
+  const fill = document.getElementById('timerBarFill');
+  if (!fill) return;
+  const delayMs = cfg.delay * 1000;
+
+  fill.style.transition = 'none';
+  fill.style.width = '100%';
+
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    fill.style.transition = `width ${delayMs}ms linear`;
+    fill.style.width = '0%';
+  }));
+
+  sess.timerHandle = setTimeout(() => {
+    // Always 2-card: just dim/fade the foil
+    const foil = [...document.querySelectorAll('.stim-card')]
+      .find(c => c.dataset.val !== sess.currentTarget && !c.classList.contains('fade-out'));
+    if (!foil) return;
+    foil.classList.add('fade-out');
+    foil.onclick = null;
+    sess.promptLevel++;
+  }, delayMs);
+}
+
+function clearTimer() {
+  if (sess.timerHandle) { clearTimeout(sess.timerHandle); sess.timerHandle = null; }
+}
+
+function logTrial(outcome) {
+  const promptLabels = ['Independent', '1-Prompt', 'Prompted'];
+  const label = promptLabels[Math.min(sess.promptLevel, 2)];
+  const target = LETTERS.find(l => l.l === sess.currentTarget);
+  sess.trialData.push({
+    time: new Date().toLocaleTimeString(),
+    letter: sess.currentTarget,
+    word: target.word,
+    outcome: label,
+    prompts: sess.promptLevel,
+  });
+}
+
+// ===== CONFETTI =====
+function launchConfetti() {
+  const canvas = document.getElementById('confetti-canvas');
+  const ctx = canvas.getContext('2d');
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+
+  const pieces = Array.from({length: 60}, () => ({
+    x: Math.random() * canvas.width,
+    y: -20,
+    r: Math.random() * 8 + 4,
+    color: ['#FDD835','#F44336','#FF6F00','#ffffff','#D32F2F'][Math.floor(Math.random()*5)],
+    vx: (Math.random() - 0.5) * 4,
+    vy: Math.random() * 5 + 2,
+    rot: Math.random() * 360,
+    rSpeed: (Math.random() - 0.5) * 10,
+  }));
+
+  let frame = 0;
+  function draw() {
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    pieces.forEach(p => {
+      ctx.save();
+      ctx.translate(p.x, p.y);
+      ctx.rotate(p.rot * Math.PI / 180);
+      ctx.fillStyle = p.color;
+      ctx.fillRect(-p.r/2, -p.r/2, p.r, p.r * 0.6);
+      ctx.restore();
+      p.x += p.vx; p.y += p.vy; p.rot += p.rSpeed; p.vy += 0.1;
+    });
+    if (frame++ < 90) requestAnimationFrame(draw);
+    else ctx.clearRect(0,0,canvas.width,canvas.height);
+  }
+  draw();
+}
+
+// ===== MODE SWITCH =====
+function switchMode(mode) {
+  sess.mode = mode;
+  clearTimer();
+  document.querySelectorAll('.mode-tab').forEach((t,i) => t.classList.toggle('active', (i===0) === (mode==='explore')));
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(`screen-${mode}`).classList.add('active');
+
+  if (mode === 'quiz') {
+    document.getElementById('quizContainer').innerHTML = `
+      <div class="start-quiz-wrap">
+        <button class="start-quiz-btn" onclick="startQuiz()">▶ Empezar / Start Quiz</button>
+        <p class="quiz-hint">Configure settings ⚙️ before starting</p>
+      </div>`;
+  }
+}
+
+// ===== SETTINGS =====
+function openSettings() { document.getElementById('settingsOverlay').classList.add('open'); }
+function closeSettings() { document.getElementById('settingsOverlay').classList.remove('open'); }
+
+function setVoiceGender(g) {
+  cfg.voiceGender = g;
+  document.getElementById('voiceMale').classList.toggle('active', g==='male');
+  document.getElementById('voiceFemale').classList.toggle('active', g==='female');
+}
+
+function setArray(n) {
+  cfg.arraySize = n;
+  document.getElementById('arr2').classList.toggle('active', n===2);
+  document.getElementById('arr3').classList.toggle('active', n===3);
+}
+
+function updateTimer(v) {
+  cfg.delay = parseInt(v);
+  document.getElementById('timerVal').textContent = v + 's';
+}
+
+function updateRate(v) {
+  cfg.rate = v / 10;
+  document.getElementById('rateVal').textContent = cfg.rate.toFixed(1) + '×';
+}
+
+// ===== DATA =====
+function openData() {
+  renderDataTable();
+  document.getElementById('dataOverlay').classList.add('open');
+}
+
+function closeData() { document.getElementById('dataOverlay').classList.remove('open'); }
+
+function renderDataTable() {
+  const wrap = document.getElementById('dataTableWrap');
+  if (!sess.trialData.length) {
+    wrap.innerHTML = '<p style="color:#888;text-align:center;padding:20px">No data yet • Sin datos aún</p>';
+    return;
+  }
+  const outcomeClass = { Independent: 'ind', '1-Prompt': 'p1', Prompted: 'p2' };
+  wrap.innerHTML = `<table>
+    <tr><th>Time</th><th>Letter</th><th>Word</th><th>Outcome</th><th>Prompts</th></tr>
+    ${sess.trialData.map(d => `
+      <tr>
+        <td>${d.time}</td>
+        <td style="font-family:'Fredoka One',cursive;font-size:1.1rem">${d.letter}</td>
+        <td>${d.word} ${LETTERS.find(l=>l.l===d.letter)?.emoji||''}</td>
+        <td class="${outcomeClass[d.outcome]||''}">${d.outcome}</td>
+        <td>${d.prompts}</td>
+      </tr>`).join('')}
+  </table>`;
+}
+
+function exportCSV() {
+  const rows = [['Time','Letter','Word','Outcome','Prompts']];
+  sess.trialData.forEach(d => rows.push([d.time, d.letter, d.word, d.outcome, d.prompts]));
+  const csv = rows.map(r => r.join(',')).join('\n');
+  const a = document.createElement('a');
+  a.href = 'URL.createObjectURL(new Blob([csv],{type:"text/csv"}))';
+  a.href = URL.createObjectURL(new Blob([csv], {type: 'text/csv'}));
+  a.download = `letras-data-${new Date().toLocaleDateString()}.csv`;
+  a.click();
+}
+
+function clearData() {
+  if (confirm('Clear all session data? / ¿Borrar todos los datos?')) {
+    sess.trialData = [];
+    renderDataTable();
+  }
+}
+
+// ===== INIT =====
+buildGrid();
+</script>
+</body>
+</html>
