@@ -644,7 +644,7 @@
         <button class="toggle-btn active" id="voiceMale" onclick="setVoiceGender('male')">♂ Male / Masculino</button>
         <button class="toggle-btn" id="voiceFemale" onclick="setVoiceGender('female')">♀ Female / Femenino</button>
       </div>
-      <button class="voice-test-btn" onclick="testVoice()">🔊 Test Voice / Probar Voz: "/a/, árbol 🌳"</button>
+      <button class="voice-test-btn" onclick="testVoice()">🔊 Test Voice / Probar Voz: "avión ✈️"</button>
     </div>
 
     <!-- Card array locked to 2 -->
@@ -687,36 +687,36 @@
 <script>
 // ===== LETTER DATA =====
 const LETTERS = [
-  { l:'A', emoji:'🌳', word:'árbol',    name:'a',     sound:'/a/' },
-  { l:'B', emoji:'🫦', word:'boca',     name:'be',    sound:'/b/' },
-  { l:'C', emoji:'🏠', word:'casa',     name:'ce',    sound:'/k/' },
-  { l:'CH',emoji:'🍫', word:'chocolate',name:'che',   sound:'/ch/' },
-  { l:'D', emoji:'👆', word:'dedo',     name:'de',    sound:'/d/' },
-  { l:'E', emoji:'⭐', word:'estrella', name:'e',     sound:'/e/' },
-  { l:'F', emoji:'🌸', word:'flor',     name:'efe',   sound:'/f/' },
-  { l:'G', emoji:'🐱', word:'gato',     name:'ge',    sound:'/g/' },
-  { l:'H', emoji:'🌿', word:'hierba',   name:'hache', sound:'silent' },
-  { l:'I', emoji:'🏝️', word:'isla',     name:'i',     sound:'/i/' },
-  { l:'J', emoji:'🦒', word:'jirafa',   name:'jota',  sound:'/x/' },
-  { l:'K', emoji:'🥝', word:'kiwi',     name:'ka',    sound:'/k/' },
-  { l:'L', emoji:'🌙', word:'luna',     name:'ele',   sound:'/l/' },
-  { l:'LL',emoji:'🔑', word:'llave',    name:'elle',  sound:'/ʎ/' },
-  { l:'M', emoji:'🍎', word:'manzana',  name:'eme',   sound:'/m/' },
-  { l:'N', emoji:'🍊', word:'naranja',  name:'ene',   sound:'/n/' },
-  { l:'Ñ', emoji:'👶', word:'niño',     name:'eñe',   sound:'/ɲ/' },
-  { l:'O', emoji:'🐑', word:'oveja',    name:'o',     sound:'/o/' },
-  { l:'P', emoji:'🍞', word:'pan',      name:'pe',    sound:'/p/' },
-  { l:'Q', emoji:'🧀', word:'queso',    name:'cu',    sound:'/k/' },
-  { l:'R', emoji:'🐸', word:'rana',     name:'erre',  sound:'/r/' },
-  { l:'RR',emoji:'🚗', word:'carro',    name:'erre doble', sound:'/rr/' },
-  { l:'S', emoji:'☀️', word:'sol',      name:'ese',   sound:'/s/' },
-  { l:'T', emoji:'🌮', word:'taco',     name:'te',    sound:'/t/' },
-  { l:'U', emoji:'🍇', word:'uvas',     name:'u',     sound:'/u/' },
-  { l:'V', emoji:'🐄', word:'vaca',     name:'uve',   sound:'/b/' },
-  { l:'W', emoji:'🌐', word:'web',      name:'doble uve', sound:'/w/' },
-  { l:'X', emoji:'🚕', word:'taxi',     name:'equis', sound:'/ks/' },
-  { l:'Y', emoji:'🐴', word:'yegua',    name:'ye',    sound:'/ʝ/' },
-  { l:'Z', emoji:'🦊', word:'zorro',    name:'zeta',  sound:'/s/' },
+  { l:'A',  emoji:'✈️',  word:'avión'     },
+  { l:'B',  emoji:'👄',  word:'boca'      },
+  { l:'C',  emoji:'🏠',  word:'casa'      },
+  { l:'CH', emoji:'🍫',  word:'chocolate' },
+  { l:'D',  emoji:'👆',  word:'dedo'      },
+  { l:'E',  emoji:'🌟',  word:'estrella'  },
+  { l:'F',  emoji:'🌸',  word:'flor'      },
+  { l:'G',  emoji:'🦍',  word:'gorila'    },
+  { l:'H',  emoji:'🥚',  word:'huevo'     },
+  { l:'I',  emoji:'🦎',  word:'iguana'    },
+  { l:'J',  emoji:'🦒',  word:'jirafa'    },
+  { l:'K',  emoji:'🥝',  word:'kiwi'      },
+  { l:'L',  emoji:'🌙',  word:'luna'      },
+  { l:'LL', emoji:'🔑',  word:'llave'     },
+  { l:'M',  emoji:'👩',  word:'mamá'      },
+  { l:'N',  emoji:'🍊',  word:'naranja'   },
+  { l:'Ñ',  emoji:'👦',  word:'niño'      },
+  { l:'O',  emoji:'🐑',  word:'oveja'     },
+  { l:'P',  emoji:'🍞',  word:'pan'       },
+  { l:'Q',  emoji:'🧀',  word:'queso'     },
+  { l:'R',  emoji:'🐸',  word:'rana'      },
+  { l:'RR', emoji:'🐕',  word:'perro'     },
+  { l:'S',  emoji:'☀️',  word:'sol'       },
+  { l:'T',  emoji:'🌮',  word:'taco'      },
+  { l:'U',  emoji:'🍇',  word:'uvas'      },
+  { l:'V',  emoji:'🐄',  word:'vaca'      },
+  { l:'W',  emoji:'🧇',  word:'waffle'    },
+  { l:'X',  emoji:'🚕',  word:'taxi'      },
+  { l:'Y',  emoji:'🥛',  word:'yogur'     },
+  { l:'Z',  emoji:'🦊',  word:'zorro'     },
 ];
 
 // ===== SETTINGS STATE =====
@@ -724,7 +724,7 @@ const cfg = {
   voiceGender: 'male',
   arraySize: 2,
   delay: 5,
-  rate: 0.8,
+  rate: 0.65,
 };
 
 // ===== SESSION STATE =====
@@ -783,14 +783,11 @@ function speak(text, cb) {
 }
 
 function speakLetter(letterObj) {
-  // Say: sound ... word (no letter name)
-  const soundText = letterObj.sound === 'silent' ? 'la hache es muda' : letterObj.sound;
-  speak(`${soundText}. ${letterObj.word}`);
+  speak(letterObj.word);
 }
 
 function testVoice() {
-  const a = LETTERS[0];
-  speak(`${a.sound}. ${a.word}`);
+  speak(LETTERS[0].word); // "avión"
 }
 
 // ===== BUILD EXPLORE GRID =====
@@ -863,7 +860,7 @@ function renderQuiz(target, items) {
     <div class="quiz-prompt">
       <div class="prompt-label">Find the letter • Encuentra la letra</div>
       <div class="prompt-bilingual">¿Cuál es la letra? / Which letter?</div>
-      <div class="prompt-sub">"${target.name}" · ${target.sound} · ${target.emoji} ${target.word}</div>
+      <div class="prompt-sub">${target.emoji} ${target.word}</div>
       <button class="replay-btn" onclick="speakLetter(LETTERS.find(l=>l.l===sess.currentTarget))">🔊 Repeat / Repetir</button>
     </div>
     <div class="timer-wrap"><div class="timer-fill" id="timerBarFill"></div></div>
